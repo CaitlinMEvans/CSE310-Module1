@@ -4,24 +4,34 @@ import psycopg2
 import psycopg2.extras
 from decimal import Decimal
 
-DSN = os.getenv("PG_DSN", "dbname=laser_shop user=postgres password=postgres host=localhost port=5432")
+DSN = os.getenv("PG_DSN", "dbname=laser_shop user=postgres password=C8tspwpw host=localhost port=5432")
 
-def q(sql, params=None, fetch="all"):
+def q(sql, params=None, fetch=None):
     with psycopg2.connect(DSN) as conn, conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
         cur.execute(sql, params or ())
+        # If the statement doesn't produce rows (INSERT/UPDATE/DELETE w/o RETURNING), cur.description is None
+        if cur.description is None:
+            return None
         if fetch == "one":
-            r = cur.fetchone()
-        elif fetch == "all":
-            r = cur.fetchall()
-        else:
-            r = None
-        return r
+            return cur.fetchone()
+        if fetch == "val":
+            row = cur.fetchone()
+            return None if row is None else list(row.values())[0]
+        # default: fetch all rows
+        return cur.fetchall()
+
 
 def create_customer(name, email, phone=None):
     return q("""
-        INSERT INTO customers (name, email, phone) VALUES (%s,%s,%s)
+        INSERT INTO customers (name, email, phone)
+        VALUES (%s, %s, %s)
+        ON CONFLICT (email)
+        DO UPDATE SET
+          name = EXCLUDED.name,
+          phone = EXCLUDED.phone
         RETURNING *;
     """, (name, email, phone), fetch="one")
+
 
 def add_order_with_item(email, product_name, qty, custom_text=None, font=None, color=None):
     cust = q("SELECT customer_id FROM customers WHERE email=%s;", (email,), fetch="one")

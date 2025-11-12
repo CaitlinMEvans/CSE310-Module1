@@ -33,7 +33,7 @@ PostgreSQL JSONB field for product specs
 4. Run `queries.sql` to test queries
 5. Edit / Run `laserDB-CRUD.sql` for CRUD operations 
 
-### Video Demo
-
+### Video Demo Link
+https://youtu.be/IyQiT2pHnh0 
 
 ---

@@ -19,6 +19,10 @@ WHERE order_id = (SELECT order_id FROM orders ORDER BY order_date DESC LIMIT 1)
 RETURNING *;
 
 -- DELETE: remove a product (only if not referenced)
-DELETE FROM products
-WHERE name='Logo Keychain' AND product_id NOT IN (SELECT product_id FROM order_items)
-RETURNING *;
+-- DELETE FROM products
+-- WHERE name='Logo Keychain' AND product_id NOT IN (SELECT product_id FROM order_items)
+-- RETURNING *;
+
+-- DELETE: Remove a customer to show Delete in CRUD works 
+DELETE FROM customers
+WHERE customer_id = 'e735e817-3943-4028-9513-6011be0f69d4';

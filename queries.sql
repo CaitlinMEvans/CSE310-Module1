@@ -17,6 +17,7 @@ GROUP BY p.name
 ORDER BY qty_sold DESC;
 
 -- Open order backlog (value not yet fully paid)
+-- Payments VS Totals 
 WITH order_totals AS (
   SELECT o.order_id,
          SUM(oi.quantity * oi.unit_price) AS order_total
